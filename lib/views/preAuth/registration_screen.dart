@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:idea_share/services/auth_service.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool showSpinner = false;
   String _email;
   String _password;
+  String _name;
 
   void _submit() async {
     final _formState = _formKey.currentState;
@@ -28,8 +30,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       _formState.save();
       setState(() => showSpinner = true);
       _passwordController.clear();
+
       dynamic result =
-          await _auth.registerWithEmailAndPassword(_email, _password);
+          await _auth.registerWithEmailAndPassword(_email, _password, _name);
 
       setState(() => showSpinner = false);
       if (result != null) {
@@ -80,12 +83,32 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ),
                           //TextFormField enables us to apply the validation layer on our text field
                           TextFormField(
+                            keyboardType: TextInputType.text,
+                            textAlign: TextAlign.center,
+                            validator: Validators.compose([
+                              Validators.required('Please enter your name'),
+                              Validators.maxLength(
+                                  30, 'Name can only be 30 characters'),
+                              Validators.patternRegExp(RegExp("^[A-Za-z ]+\$"),
+                                  'Only alphabets are allowed')
+                            ]),
+                            onSaved: (value) => _name = value,
+                            decoration: textFieldDecoration.copyWith(
+                                hintText: 'Enter your name'),
+                          ),
+                          SizedBox(
+                            height: 8.0,
+                          ),
+                          //TextFormField enables us to apply the validation layer on our text field
+                          TextFormField(
                             keyboardType: TextInputType.emailAddress,
                             textAlign: TextAlign.center,
                             validator: Validators.compose([
                               Validators.required(
                                   'Please enter an email address'),
-                              Validators.email('Invalid email address')
+                              Validators.email('Invalid email address'),
+                              Validators.maxLength(
+                                  254, 'Email exceeds max length')
                             ]),
                             onSaved: (value) => _email = value,
                             decoration: textFieldDecoration.copyWith(

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:idea_share/models/user.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +8,9 @@ class AuthService {
 
   //create user object based on firebase user
   User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid, email: user.email) : null;
+    return user != null
+        ? User(uid: user.uid, email: user.email, name: user.displayName)
+        : null;
   }
 
   //getCurrentLoggedInUser
@@ -23,33 +24,38 @@ class AuthService {
   }
 
   //register with email and password
-  Future registerWithEmailAndPassword(String email, String password) async {
+  Future registerWithEmailAndPassword(
+      String email, String password, String name) async {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser fUser = result.user;
+      UserUpdateInfo updateInfo = UserUpdateInfo();
+      updateInfo.displayName = name;
+      fUser.updateProfile(updateInfo);
+      print('---------------------------------------${fUser.displayName}');
       //create new document for user with the uid
       return _userFromFirebaseUser(fUser);
-    } on PlatformException catch (e) {
-      print(e);
-      Fluttertoast.showToast(
-          msg: "This email is in use choose another one!",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 3,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      return null;
     } catch (e) {
-      Fluttertoast.showToast(
-          msg: "An error has occured pleased check the fields!",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIos: 3,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      print(e);
+      e.code == 'ERROR_EMAIL_ALREADY_IN_USE'
+          ? Fluttertoast.showToast(
+              msg: "This email is in use choose another one!",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIos: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0)
+          : Fluttertoast.showToast(
+              msg: "An error has occured pleased check the fields!",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIos: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+
       return null;
     }
   }
