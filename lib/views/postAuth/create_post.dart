@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:idea_share/models/post.dart';
 import 'package:idea_share/models/user.dart';
 import 'package:idea_share/services/database_service.dart';
-
 import 'package:idea_share/shared_components/shared_button_rectangle.dart';
 import 'package:provider/provider.dart';
 import 'package:idea_share/shared_components/constants.dart';

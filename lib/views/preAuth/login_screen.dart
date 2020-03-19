@@ -100,12 +100,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: true,
                             textAlign: TextAlign.center,
                             // ignore: missing_return
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'Please provide a password';
-                              }
-                              return null;
-                            },
+                            validator: Validators.compose([
+                              Validators.required('no password entered'),
+                              Validators.minLength(
+                                  8, 'password needs to be 8 characters'),
+                              Validators.maxLength(128, 'password too long'),
+                            ]),
                             onSaved: (value) => _password = value,
                             decoration: textFieldDecoration.copyWith(
                                 hintText: 'Enter your password'),

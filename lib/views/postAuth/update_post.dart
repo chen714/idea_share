@@ -80,6 +80,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     Navigator.pop(context);
+                    Navigator.pop(context);
                     await _databaseService.updateUserPost(
                       sentOn: widget.post.sentOn,
                       message: _message,

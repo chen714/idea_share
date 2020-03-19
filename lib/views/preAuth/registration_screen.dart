@@ -85,6 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           TextFormField(
                             keyboardType: TextInputType.text,
                             textAlign: TextAlign.center,
+                            textCapitalization: TextCapitalization.words,
                             validator: Validators.compose([
                               Validators.required('Please enter your name'),
                               Validators.maxLength(

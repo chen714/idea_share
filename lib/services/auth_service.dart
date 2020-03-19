@@ -29,10 +29,29 @@ class AuthService {
     try {
       AuthResult result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      FirebaseUser fUser = result.user;
+      FirebaseUser fUser = await _auth.currentUser();
       UserUpdateInfo updateInfo = UserUpdateInfo();
       updateInfo.displayName = name;
-      fUser.updateProfile(updateInfo);
+
+      await fUser.updateProfile(updateInfo).whenComplete(() async {
+        //relevant signout code below as user.reload won't update user object until signin/signout
+        //forced and only way to ensure DisplayName is available immediately on first log in
+        await _auth.signOut();
+        AuthResult result2 = await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        fUser = await _auth.currentUser();
+      }).catchError((e) {
+        _auth.signOut();
+        Fluttertoast.showToast(
+            msg: "An error has occured pleased sign in!",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 3,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      });
+
       print('---------------------------------------${fUser.displayName}');
       //create new document for user with the uid
       return _userFromFirebaseUser(fUser);

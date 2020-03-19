@@ -6,7 +6,6 @@ import 'package:idea_share/views/postAuth/update_post.dart';
 import 'package:provider/provider.dart';
 import 'package:idea_share/models/post.dart';
 import 'package:idea_share/models/user.dart';
-import 'package:idea_share/views/postAuth/create_post.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class PostList extends StatefulWidget {

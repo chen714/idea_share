@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:idea_share/models/post.dart';
-import 'package:idea_share/models/user.dart';
 import 'package:idea_share/services/auth_service.dart';
 import 'package:idea_share/services/database_service.dart';
 import 'package:idea_share/views/postAuth/create_post.dart';
@@ -17,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currUser = Provider.of<User>(context);
     return StreamProvider<List<Post>>.value(
       value: DatabaseService().posts,
       child: Scaffold(
