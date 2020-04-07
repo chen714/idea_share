@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:idea_share/models/user.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:password_compromised/password_compromised.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -42,38 +43,20 @@ class AuthService {
         fUser = await _auth.currentUser();
       }).catchError((e) {
         _auth.signOut();
-        Fluttertoast.showToast(
-            msg: "An error has occured pleased sign in!",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIos: 3,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        showToast("An error has occured pleased sign in!");
       });
 
-      print('---------------------------------------${fUser.displayName}');
       //create new document for user with the uid
       return _userFromFirebaseUser(fUser);
     } catch (e) {
-      print(e);
-      e.code == 'ERROR_EMAIL_ALREADY_IN_USE'
-          ? Fluttertoast.showToast(
-              msg: "This email is in use choose another one!",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIos: 3,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0)
-          : Fluttertoast.showToast(
-              msg: "An error has occured pleased check the fields!",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIos: 3,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
+      if (e.code == 'ERROR_EMAIL_ALREADY_IN_USE') {
+        showToast("This email is in use choose another one!");
+      } else if (e.code == 'ERROR_NETWORK_REQUEST_FAILED') {
+        showToast(
+            "An error has occured while trying to connect to the internet. \nInternet connection is required to use this application. \nPlease try again later. ");
+      } else {
+        showToast("An error has occured pleased check the fields!");
+      }
 
       return null;
     }
@@ -87,7 +70,17 @@ class AuthService {
       FirebaseUser fUser = result.user;
       return _userFromFirebaseUser(fUser);
     } catch (e) {
-      print(e.toString());
+      if (e.code == 'ERROR_WRONG_PASSWORD' ||
+          e.code == 'ERROR_USER_NOT_FOUND') {
+        showToast(
+            "Incorrect username or passowed \nplease check login credentials and try again.");
+      } else if (e.code == 'ERROR_NETWORK_REQUEST_FAILED') {
+        showToast(
+            "An error has occured while trying to connect to the internet. \nInternet connection is required to use this application. \nPlease try again later. ");
+      } else {
+        showToast("An error has occured pleased try again later");
+      }
+
       return null;
     }
   }
@@ -97,8 +90,20 @@ class AuthService {
     try {
       return await _auth.signOut();
     } catch (e) {
-      print(e.toString());
+      showToast(
+          "An error occurred while logging you out. \nPlease check internet connection and try again later. ");
       return null;
     }
+  }
+
+  void showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 3,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 }

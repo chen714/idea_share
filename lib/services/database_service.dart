@@ -4,9 +4,9 @@ import 'package:idea_share/models/post.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
-final key = encrypt.Key.fromLength(32);
-final iv = encrypt.IV.fromLength(16);
-final encrypter = encrypt.Encrypter(encrypt.AES(key));
+final encryptorKey = encrypt.Key.fromLength(32);
+final initializationVector = encrypt.IV.fromLength(16);
+final encrypter = encrypt.Encrypter(encrypt.AES(encryptorKey));
 
 class DatabaseService {
   final String uid;
@@ -19,7 +19,7 @@ class DatabaseService {
     return await _userPosts
         .document('$uid-${sentOn.toString().substring(0, 20)}')
         .updateData({
-      'message': encrypter.encrypt(message, iv: iv).base64,
+      'message': encrypter.encrypt(message, iv: initializationVector).base64,
     }).whenComplete(() {
       Fluttertoast.showToast(
           msg: "Post updated",
@@ -49,7 +49,8 @@ class DatabaseService {
       'sentOn': post.sentOn,
       'sender': post.sender,
       'senderEmail': post.senderEmail,
-      'message': encrypter.encrypt(post.message, iv: iv).base64,
+      'message':
+          encrypter.encrypt(post.message, iv: initializationVector).base64,
     }).whenComplete(() {
       Fluttertoast.showToast(
           msg: "Post made",
@@ -79,7 +80,9 @@ class DatabaseService {
           sentOn: doc.data['sentOn'].toDate() ?? DateTime.now(),
           sender: doc.data['sender'] ?? ' ',
           senderEmail: doc.data['senderEmail'] ?? ' ',
-          message: encrypter.decrypt64(doc.data['message'], iv: iv) ?? ' ');
+          message: encrypter.decrypt64(doc.data['message'],
+                  iv: initializationVector) ??
+              ' ');
     }).toList();
   }
 

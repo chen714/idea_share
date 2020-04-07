@@ -62,10 +62,10 @@ class _UpdatePostState extends State<UpdatePost> {
                   Validators.minLength(
                       5, 'Posts need to be longer then 5 characters.'),
                   Validators.patternRegExp(
-                      RegExp("^[A-Za-z0-9_().,?/@!'--+*/ ]*\$"),
+                      RegExp("^[A-Za-z0-9_().,?/@!'--+*/ \n]*\$"),
                       'Only alphanumeric characters, punctuation \nunderscores and at symbol are allowed')
                 ]),
-                onChanged: (value) {
+                onSaved: (value) {
                   setState(() {
                     _message = value;
                   });
@@ -79,6 +79,7 @@ class _UpdatePostState extends State<UpdatePost> {
                 value: 'Update Post! 📧',
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
                     Navigator.pop(context);
                     Navigator.pop(context);
                     await _databaseService.updateUserPost(

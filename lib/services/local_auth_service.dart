@@ -12,8 +12,6 @@ class LocalAuthService {
     try {
       checkBiometric = await _localAuthentication.canCheckBiometrics;
     } on PlatformException catch (e) {
-      print(
-          '-------------------------------------------------check biometrics: $e');
       showToast();
       return false;
     }
@@ -26,8 +24,6 @@ class LocalAuthService {
       try {
         listofBiometric = await _localAuthentication.getAvailableBiometrics();
       } on PlatformException catch (e) {
-        print(
-            '-------------------------------------------------check fingerprint: $e');
         showToast();
         return false;
       }
@@ -35,13 +31,9 @@ class LocalAuthService {
         return true;
       } else {
         showToast();
-        print(
-            '-------------------------------------------------check fingerprint --no finger');
         return false;
       }
     } else {
-      print(
-          '-------------------------------------------------check fingerprint --no print');
       showToast();
       return false;
     }
@@ -64,14 +56,10 @@ class LocalAuthService {
         isAuth = await _authenticate();
       } on PlatformException catch (e) {
         showToast();
-        print(
-            '-------------------------------------------------authorize now: platform $e');
         return false;
       }
       return isAuth;
     } else {
-      print(
-          '-------------------------------------------------authorize now:false');
       showToast();
       return false;
     }

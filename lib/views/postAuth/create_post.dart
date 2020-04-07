@@ -58,10 +58,10 @@ class _CreatePostState extends State<CreatePost> {
                   Validators.minLength(
                       5, 'Posts need to be longer then 5 characters.'),
                   Validators.patternRegExp(
-                      RegExp("^[A-Za-z0-9_().,?/@!'--+*/ ]*\$"),
+                      RegExp("^[A-Za-z0-9_().,?/@!'--+*/ \n]*\$"),
                       'Only alphanumeric characters, punctuation \nunderscores and at symbol are allowed')
                 ]),
-                onChanged: (value) {
+                onSaved: (value) {
                   setState(() {
                     _message = value;
                   });
@@ -75,6 +75,7 @@ class _CreatePostState extends State<CreatePost> {
                 value: 'Post! 📧',
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
+                    _formKey.currentState.save();
                     Navigator.pop(context);
                     await _databaseService.createUserPost(
                         post: Post(

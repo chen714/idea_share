@@ -87,7 +87,7 @@ class _PostListState extends State<PostList> {
                       toastLength: Toast.LENGTH_LONG,
                       gravity: ToastGravity.CENTER,
                       timeInSecForIos: 3,
-                      backgroundColor: ThemeData.dark().cardColor,
+                      backgroundColor: Colors.red,
                       textColor: Colors.white,
                       fontSize: 16.0);
             });

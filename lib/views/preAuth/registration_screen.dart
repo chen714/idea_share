@@ -1,4 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:password_compromised/password_compromised.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:idea_share/services/auth_service.dart';
 import 'package:flutter/services.dart';
@@ -6,10 +7,9 @@ import 'package:idea_share/shared_components/shared_button_rectangle.dart';
 import 'package:idea_share/shared_components/constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  static const String id = 'registration_screen';
-
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
@@ -28,12 +28,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     final _formState = _formKey.currentState;
     if (_formState.validate()) {
       _formState.save();
-      setState(() => showSpinner = true);
       _passwordController.clear();
-
-      dynamic result =
-          await _auth.registerWithEmailAndPassword(_email, _password, _name);
-
+      setState(() => showSpinner = true);
+      dynamic result;
+      if (await isPasswordCompromised(_password)) {
+        _showPwdCompromisedDialog(context);
+      } else {
+        result =
+            await _auth.registerWithEmailAndPassword(_email, _password, _name);
+      }
       setState(() => showSpinner = false);
       if (result != null) {
         Navigator.pop(context);
@@ -66,17 +69,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          SizedBox(
-                            height: 50,
-                          ),
                           Flexible(
                             child: Hero(
-                              tag: 'lightbulb',
-                              child: Text(
-                                '💡',
-                                style: TextStyle(fontSize: 50),
-                              ),
-                            ),
+                                tag: 'lightbulb',
+                                child: Image.asset('assets/lightbulb.png')),
+                          ),
+                          Flexible(
+                            child: ScaleAnimatedTextKit(
+                                text: ["Express", "Your", "Ideas"],
+                                textStyle: TextStyle(
+                                    fontSize: 70.0, fontFamily: "Pacifico"),
+                                textAlign: TextAlign.center,
+                                alignment: AlignmentDirectional
+                                    .center // or Alignment.topLeft
+                                ),
                           ),
                           SizedBox(
                             height: 30.0,
@@ -90,6 +96,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               Validators.required('Please enter your name'),
                               Validators.maxLength(
                                   30, 'Name can only be 30 characters'),
+                              Validators.minLength(
+                                  3, 'Name can only be minium 2 characters'),
                               Validators.patternRegExp(RegExp("^[A-Za-z ]+\$"),
                                   'Only alphabets are allowed')
                             ]),
@@ -133,8 +141,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   '(?=.*\\d)', 'a number required'),
                               Validators.patternString(
                                   '(?=.*[a-z])', 'lowercase required'),
-//                              Validators.patternString('(?=.*[@#%&])',
-//                                  'Your password must contain at least 1 special character - [@, #, % or &]')
+                              Validators.patternString('(?=.*[@#%&,.])',
+                                  'Your password must contain at least 1 of the \nfollowing characters [@, #, % , . , & or ,]')
                             ]),
                             decoration: textFieldDecoration.copyWith(
                                 hintText: 'Enter your password'),
@@ -170,5 +178,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                 ],
               ));
+  }
+
+  _showPwdCompromisedDialog(context) {
+    Alert(
+            context: context,
+            title: "Password Compromised!",
+            desc:
+                "The password that you have choosen have appeared on pwned password databases meaning that its insecure and can be easily compromised, please change account password to something else.")
+        .show();
   }
 }

@@ -5,10 +5,20 @@ import 'package:idea_share/shared_components/shared_button_rectangle.dart';
 import 'package:idea_share/shared_components/constants.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+
+class PasswordFieldValidator {
+  static String validatePassword(String value) {
+    if (value.isEmpty) {
+      return 'Please provide a password';
+    } else if (value.length > 128) {
+      return 'Passowrd too long';
+    }
+    return null;
+  }
+}
 
 class LoginScreen extends StatefulWidget {
-  static const String id = 'registration_screen';
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -63,17 +73,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          SizedBox(
-                            height: 50,
-                          ),
                           Flexible(
                             child: Hero(
-                              tag: 'lightbulb',
-                              child: Text(
-                                '💡',
-                                style: TextStyle(fontSize: 50),
-                              ),
-                            ),
+                                tag: 'lightbulb',
+                                child: Image.asset('assets/lightbulb.png')),
+                          ),
+                          Flexible(
+                            child: ScaleAnimatedTextKit(
+                                text: ["Express", "Your", "Ideas"],
+                                textStyle: TextStyle(
+                                    fontSize: 70.0, fontFamily: "Pacifico"),
+                                textAlign: TextAlign.center,
+                                alignment: AlignmentDirectional
+                                    .center // or Alignment.topLeft
+                                ),
                           ),
                           SizedBox(
                             height: 30.0,
@@ -100,12 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: true,
                             textAlign: TextAlign.center,
                             // ignore: missing_return
-                            validator: Validators.compose([
-                              Validators.required('no password entered'),
-                              Validators.minLength(
-                                  8, 'password needs to be 8 characters'),
-                              Validators.maxLength(128, 'password too long'),
-                            ]),
+                            validator: (value) =>
+                                PasswordFieldValidator.validatePassword(value),
                             onSaved: (value) => _password = value,
                             decoration: textFieldDecoration.copyWith(
                                 hintText: 'Enter your password'),

@@ -50,32 +50,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         backgroundColor: Colors.transparent,
       ),
       backgroundColor: animation.value,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
+      body: ListView(children: <Widget>[
+        Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ScaleAnimatedTextKit(
-                    text: ["Express", "Your", "Ideas"],
-                    textStyle:
-                        TextStyle(fontSize: 70.0, fontFamily: "Pacifico"),
-                    textAlign: TextAlign.center,
-                    alignment:
-                        AlignmentDirectional.center // or Alignment.topLeft
-                    ),
-                Hero(
-                  tag: 'lightbulb',
-                  child: Text(
-                    '💡',
-                    style: TextStyle(fontSize: 50),
-                  ),
+            Hero(tag: 'lightbulb', child: Image.asset('assets/lightbulb.png')),
+            ScaleAnimatedTextKit(
+                text: ["Express", "Your", "Ideas"],
+                textStyle: TextStyle(fontSize: 70.0, fontFamily: "Pacifico"),
+                textAlign: TextAlign.center,
+                alignment: AlignmentDirectional.center // or Alignment.topLeft
                 ),
-              ],
-            ),
             SizedBox(
               height: 40.0,
             ),
@@ -102,10 +88,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   }),
                 );
               },
-            )
+            ),
           ],
         ),
-      ),
+      ]),
     );
   }
 }
